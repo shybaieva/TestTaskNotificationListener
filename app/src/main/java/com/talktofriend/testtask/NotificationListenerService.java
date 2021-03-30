@@ -29,7 +29,7 @@ import java.time.LocalTime;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class NotificationListenerExampleService extends NotificationListenerService {
+public class NotificationListenerService extends android.service.notification.NotificationListenerService {
 
     public String text, appName, ico, date, time;
 
