@@ -181,8 +181,8 @@ public class MainActivity extends AppCompatActivity {
         alertDialogBuilder.setNegativeButton("No",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // If you choose to not enable the notification listener
-                        // the app. will not work as expected
+                       isServiceStarted=false;
+                        Toast.makeText(MainActivity.this, "App cannot work without notification permission", Toast.LENGTH_SHORT).show();
                     }
                 });
         return(alertDialogBuilder.create());
