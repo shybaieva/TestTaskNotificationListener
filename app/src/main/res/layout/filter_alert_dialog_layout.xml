@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:columnCount="2">
+
+    <ImageButton
+        android:id="@+id/allBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="#00FFFFFF"
+        app:srcCompat="@drawable/radio_button_checked" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="All"
+        android:textColor="@color/black"
+        android:textSize="34sp" />
+
+    <ImageButton
+        android:id="@+id/perHourBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#00FFFFFF"
+        android:layout_margin="10dp"
+        app:srcCompat="@drawable/radio_button_checked" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Per Hour"
+        android:textColor="@color/black"
+        android:textSize="34sp" />
+
+    <ImageButton
+        android:id="@+id/perDayBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="#00FFFFFF"
+        app:srcCompat="@drawable/radio_button_checked" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Per Day"
+        android:textColor="@color/black"
+        android:textSize="34sp" />
+
+    <ImageButton
+        android:id="@+id/perMounthBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="#00FFFFFF"
+        app:srcCompat="@drawable/radio_button_checked" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Per Mounth"
+        android:textColor="@color/black"
+        android:textSize="34sp" />
+</GridLayout>

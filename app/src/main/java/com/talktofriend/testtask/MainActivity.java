@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -27,14 +28,17 @@ public class MainActivity extends AppCompatActivity {
     private static final String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
 
-    private ImageChangeBroadcastReceiver imageChangeBroadcastReceiver;
+    private NotificationReceiver notificationReceiver;
     private AlertDialog enableNotificationListenerAlertDialog;
 
     private RecyclerView recyclerView;
     private ImageView noNotificationImg;
     private ImageButton startBtn, filterBtn;
 
-    private boolean isServiceStopped = false, isPermissionGiven = false;
+    private SharedPreferences sharedPreferences;
+    private static final String PERMISSION = "permission";
+
+    private boolean isServiceStarted = false, isPermissionGiven = false;
 
     private String title, text, icon, date, time;
     private ArrayList<String> titles, texts, icons, dates, times;
@@ -56,30 +60,43 @@ public class MainActivity extends AppCompatActivity {
 
         readNotificationFromDB();
 
+        isPermissionGiven = sharedPreferences.getBoolean(PERMISSION, false);
+
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isServiceStopped){
-                    isServiceStopped = true;
-                    checkPermission();
+                if(!isServiceStarted){
+                    isServiceStarted = true;
                     if(isPermissionGiven){
-                        imageChangeBroadcastReceiver = new ImageChangeBroadcastReceiver();
+                        notificationReceiver = new NotificationReceiver();
                         IntentFilter intentFilter = new IntentFilter();
                         intentFilter.addAction(getApplicationContext().getPackageName());
-                        registerReceiver(imageChangeBroadcastReceiver,intentFilter);
+                        registerReceiver(notificationReceiver,intentFilter);
+                        startBtn.setImageResource(R.drawable.stop);
                         Toast.makeText(MainActivity.this, "Service started", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else {
-                    isServiceStopped = false;
-                    if(isPermissionGiven){
-                        unregisterReceiver(imageChangeBroadcastReceiver);
                     }
                     else{
                         checkPermission();
                     }
-                    Toast.makeText(MainActivity.this, "Service stopped", Toast.LENGTH_SHORT).show();
                 }
+                else {
+                    isServiceStarted = false;
+                    if(isPermissionGiven){
+                        unregisterReceiver(notificationReceiver);
+                        startBtn.setImageResource(R.drawable.start);
+                        Toast.makeText(MainActivity.this, "Service stopped", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        checkPermission();
+                    }
+                }
+            }
+        });
+
+        filterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFilterAlertDialog();
             }
         });
     }
@@ -98,13 +115,9 @@ public class MainActivity extends AppCompatActivity {
 
         dataBaseHelper = new DataBaseHelper(getApplicationContext());
         recyclerAdapter = new RecyclerAdapter(getApplicationContext(), titles, texts, icons, dates, times);
-    }
 
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        unregisterReceiver(imageChangeBroadcastReceiver);
-//    }
+        sharedPreferences = getSharedPreferences(PERMISSION, MODE_PRIVATE);
+    }
 
     private void refreshRecyclerView(){
         titles.add(title); texts.add(text); icons.add("icon");  dates.add(date); times.add(time);
@@ -159,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    public class ImageChangeBroadcastReceiver extends BroadcastReceiver {
+    public class NotificationReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
            title = intent.getStringExtra("app");
@@ -168,12 +181,9 @@ public class MainActivity extends AppCompatActivity {
                 text = text.substring(0, 20);
            time = intent.getStringExtra("time");
            date = intent.getStringExtra("date");
-           //TODO:
-          //
+
            saveNotification();
            refreshRecyclerView();
-           //readNotificationFromDB();
-
         }
     }
 
@@ -185,18 +195,27 @@ public class MainActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         startActivity(new Intent(ACTION_NOTIFICATION_LISTENER_SETTINGS));
-                        isServiceStopped = false;
+                        isServiceStarted = false;
                         isPermissionGiven = true;
+
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean(PERMISSION ,isPermissionGiven);
+                        editor.apply();
                     }
                 });
         alertDialogBuilder.setNegativeButton("No",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                       isServiceStopped =true;
+                       isServiceStarted =true;
                        isPermissionGiven = false;
                        Toast.makeText(MainActivity.this, "App cannot work without notification permission", Toast.LENGTH_SHORT).show();
                     }
                 });
         return(alertDialogBuilder.create());
+    }
+
+    private void openFilterAlertDialog(){
+        FilterAlertDialog filterAlertDialog = new FilterAlertDialog();
+        filterAlertDialog.show(getSupportFragmentManager(), "Filter");
     }
 }
