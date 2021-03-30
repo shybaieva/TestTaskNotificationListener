@@ -14,7 +14,7 @@ import androidx.fragment.app.DialogFragment;
 
 public class FilterAlertDialog extends DialogFragment {
 
-    ImageButton allNotifications, perHour, perDay, perMounth;
+    ImageButton allNotifications, perHour, perDay, perMonth;
 
     @NonNull
     @Override
@@ -22,8 +22,11 @@ public class FilterAlertDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.filter_alert_dialog_layout, null);
+
         allNotifications = view.findViewById(R.id.allBtn);
         perHour = view.findViewById(R.id.perHourBtn);
+        perDay = view.findViewById(R.id.perDayBtn);
+        perMonth = view.findViewById(R.id.perMounthBtn);
 
         allNotifications.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -31,8 +34,29 @@ public class FilterAlertDialog extends DialogFragment {
                 Toast.makeText(getActivity(), "ALL", Toast.LENGTH_SHORT).show();
             }
         });
+
+        perHour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        perDay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        perMonth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         builder.setView(view);
         return builder.create();
     }
-
 }
