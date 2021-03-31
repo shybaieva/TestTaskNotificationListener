@@ -79,12 +79,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 break;
             }
             case 3: {
-
-                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " >= " + LocalDate.now().atStartOfDay();
+                int lastDay = LocalDate.now().getDayOfYear() -1;
+                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " < " + lastDay;
                 break;
             }
             case 4:{
-                int lastMonth = LocalDate.now().getMonthValue() - 1;
+                int lastMonth = LocalDate.now().getMonthValue() -1;
                 query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " >= " + lastMonth;
                 break;
             }

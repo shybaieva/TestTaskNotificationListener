@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
                 text = text.substring(0, 20);
            time = intent.getStringExtra("time");
            date = intent.getStringExtra("date");
-
+          // icon = intent.getIntExtra("ico");
            saveNotification();
            refreshRecyclerView();
         }

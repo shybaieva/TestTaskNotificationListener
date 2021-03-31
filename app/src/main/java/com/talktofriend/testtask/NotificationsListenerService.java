@@ -1,5 +1,6 @@
 package com.talktofriend.testtask;
 
+import android.app.Notification;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -11,7 +12,8 @@ import java.time.LocalTime;
 
 public class NotificationsListenerService extends android.service.notification.NotificationListenerService {
 
-    public String text, appName, ico, date, time;
+    private String text, appName, date, time;
+    private int ico;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -32,12 +34,14 @@ public class NotificationsListenerService extends android.service.notification.N
 
         time = LocalTime.now().getHour() + ":" + minutes;
         date = String.valueOf(LocalDate.now());
+        ico = sbn.getNotification().extras.getInt(Notification.EXTRA_LARGE_ICON_BIG);
 
         Intent intent = new  Intent(getApplicationContext().getPackageName());
         intent.putExtra("app", getAppName(appName));
         intent.putExtra("text", text);
         intent.putExtra("time", time);
         intent.putExtra("date", date);
+        intent.putExtra("ico", ico);
 
         sendBroadcast(intent);
     }
