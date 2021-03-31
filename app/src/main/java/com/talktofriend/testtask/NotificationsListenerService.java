@@ -6,9 +6,10 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.service.notification.StatusBarNotification;
+import android.util.Log;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class NotificationsListenerService extends android.service.notification.NotificationListenerService {
 
@@ -22,24 +23,20 @@ public class NotificationsListenerService extends android.service.notification.N
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn){
-        String minutes;
         appName = sbn.getPackageName();
         text = sbn.getNotification().extras.getString("android.text");
-        if(LocalTime.now().getMinute()<=9){
-            minutes = "0"+ LocalTime.now().getMinute();
-        }
-        else{
-            minutes = String.valueOf(LocalTime.now().getMinute());
-        }
 
-        time = LocalTime.now().getHour() + ":" + minutes;
-        date = String.valueOf(LocalDate.now());
-        ico = sbn.getNotification().extras.getInt(Notification.EXTRA_LARGE_ICON_BIG);
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-DD hh:mm:ss");
+        date = (formatter.format(calendar.getTime()));
+
+        ico = sbn.getNotification().extras.getInt("android.icon");
+        Log.i("Meow", ico + "");
 
         Intent intent = new  Intent(getApplicationContext().getPackageName());
         intent.putExtra("app", getAppName(appName));
         intent.putExtra("text", text);
-        intent.putExtra("time", time);
+        //intent.putExtra("time", time);
         intent.putExtra("date", date);
         intent.putExtra("ico", ico);
 
@@ -54,18 +51,18 @@ public class NotificationsListenerService extends android.service.notification.N
         return  (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
     }
 
-    @Override
-    public void onNotificationRemoved(StatusBarNotification sbn){
-            StatusBarNotification[] activeNotifications = this.getActiveNotifications();
-
-            if(activeNotifications != null && activeNotifications.length > 0) {
-                for (int i = 0; i < activeNotifications.length; i++) {
-                        Intent intent = new  Intent(getApplicationContext().getPackageName());
-                        intent.putExtra("app", appName);
-                        sendBroadcast(intent);
-                        break;
-                }
-            }
-    }
+//    @Override
+//    public void onNotificationRemoved(StatusBarNotification sbn){
+//            StatusBarNotification[] activeNotifications = this.getActiveNotifications();
+//
+//            if(activeNotifications != null && activeNotifications.length > 0) {
+//                for (int i = 0; i < activeNotifications.length; i++) {
+//                        Intent intent = new  Intent(getApplicationContext().getPackageName());
+//                        intent.putExtra("app", appName);
+//                        sendBroadcast(intent);
+//                        break;
+//                }
+//            }
+//    }
 
 }

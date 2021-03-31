@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.icu.util.LocaleData;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -21,7 +22,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements GetFilterChoice {
 
@@ -42,8 +47,13 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
 
     private boolean isServiceStarted = false, isPermissionGiven = false;
 
-    private String title, text, icon, date, time;
-    private ArrayList<String> titles, texts, icons, dates, times;
+    private String title;
+    private String text;
+    private int icon;
+    private String date;
+    private String time;
+    private ArrayList<String> titles, texts, dates, times;
+    private ArrayList<Integer> icons;
     private DataBaseHelper dataBaseHelper;
     private RecyclerAdapter recyclerAdapter;
 
@@ -122,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     }
 
     private void refreshRecyclerView(){
-        titles.add(title); texts.add(text); icons.add("icon");  dates.add(date); times.add(time);
+        titles.add(title); texts.add(text); icons.add(icon);  dates.add(date); times.add("time");
         recyclerAdapter.notifyDataSetChanged();
     }
 
@@ -135,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
 
     private void readNotificationFromDB(int filterChoice){
         Cursor cursor = dataBaseHelper.readNotificationsData(filterChoice);
-        if(cursor.getCount() == 0){
+        if(cursor.getCount() == 0 || cursor==null){
             Toast.makeText(this, "NO DATA", Toast.LENGTH_SHORT).show();
         }
         else{
@@ -143,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
             while (cursor.moveToNext()){
                 titles.add(cursor.getString(1));
                 texts.add(cursor.getString(2));
-                icons.add(cursor.getString(3));
+                icons.add(cursor.getInt(3));
                 dates.add(cursor.getString(4));
                 times.add(cursor.getString(5));
             }
@@ -151,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     }
 
     private void saveNotification(){
-        dataBaseHelper.addNewNotification(title, text, "ico", date, time);
+        dataBaseHelper.addNewNotification(title, text, icon, date, "time");
     }
 
     private boolean isNotificationServiceEnabled(){
@@ -189,9 +199,10 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
            text = intent.getStringExtra("text");
             if(text.length()>20)
                 text = text.substring(0, 20);
-           time = intent.getStringExtra("time");
+
            date = intent.getStringExtra("date");
-          // icon = intent.getIntExtra("ico");
+
+           icon = intent.getIntExtra("ico", -1);
            saveNotification();
            refreshRecyclerView();
         }

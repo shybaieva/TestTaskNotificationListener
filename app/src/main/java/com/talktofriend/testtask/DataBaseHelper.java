@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Calendar;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
@@ -37,8 +38,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String query =
                 "CREATE TABLE " + TABLE_NAME + " (" + NOTIFICATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + NOTIFICATION_TITLE +" TEXT, " + NOTIFICATION_TEXT + " TEXT, " + NOTIFICATION_ICON + " TEXT, "
-                + NOTIFICATION_DATE + " DATE, " + NOTIFICATION_TIME + " TIME);";
+                + NOTIFICATION_TITLE +" TEXT, " + NOTIFICATION_TEXT + " TEXT, " + NOTIFICATION_ICON + " INTEGER, "
+                + NOTIFICATION_DATE + " DATETIME, " + NOTIFICATION_TIME + " TIME);";
 
         db.execSQL(query);
     }
@@ -49,7 +50,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    void addNewNotification(String title, String text, String ico, String date, String time){
+    void addNewNotification(String title, String text, int ico, String date, String time){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -69,23 +70,28 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     Cursor readNotificationsData(int filterChoice){
-
         String query ;
+
         switch (filterChoice){
             case 2: {
-                int lastHour = LocalTime.now().getHour()-1;
-                Toast.makeText(context, lastHour +"", Toast.LENGTH_SHORT).show();
-                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_TIME + " >= " + lastHour;
+                String currentDate = LocalDate.now().toString();
+                int currentHour = LocalTime.now().getHour();
+                //Toast.makeText(context, lastHour +"", Toast.LENGTH_SHORT).show();
+                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " >= ''" + currentDate + " " + currentHour + ":00:00'";
                 break;
             }
             case 3: {
-                int lastDay = LocalDate.now().getDayOfYear() -1;
-                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " < " + lastDay;
+                LocalDate today = LocalDate.now();
+
+                Toast.makeText(context, today+"", Toast.LENGTH_SHORT).show();
+
+                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " >= '" + today.toString() + " 00:00:00'";
+
                 break;
             }
             case 4:{
                 int lastMonth = LocalDate.now().getMonthValue() -1;
-                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " >= " + lastMonth;
+                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " >= '" + lastMonth;
                 break;
             }
             default:{
