@@ -31,7 +31,7 @@ public class NotificationsListenerService extends android.service.notification.N
         }
 
         time = LocalTime.now().getHour() + ":" + minutes;
-        date = LocalDate.now().getDayOfMonth() + "." + LocalDate.now().getMonthValue() + "." + LocalDate.now().getYear();
+        date = String.valueOf(LocalDate.now());
 
         Intent intent = new  Intent(getApplicationContext().getPackageName());
         intent.putExtra("app", getAppName(appName));

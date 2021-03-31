@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GetFilterChoice {
 
     private static final String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences sharedPreferences;
     private static final String PERMISSION = "permission";
+
+    private int filterChoice = 1;
 
     private boolean isServiceStarted = false, isPermissionGiven = false;
 
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        readNotificationFromDB();
+        readNotificationFromDB(filterChoice);
 
         isPermissionGiven = sharedPreferences.getBoolean(PERMISSION, false);
 
@@ -131,8 +133,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void readNotificationFromDB(){
-        Cursor cursor = dataBaseHelper.readNotificationsData();
+    private void readNotificationFromDB(int filterChoice){
+        Cursor cursor = dataBaseHelper.readNotificationsData(filterChoice);
         if(cursor.getCount() == 0){
             Toast.makeText(this, "NO DATA", Toast.LENGTH_SHORT).show();
         }
@@ -168,6 +170,16 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return false;
+    }
+
+    @Override
+    public void onSendFilterChoice(int choice) {
+        Toast.makeText(this, choice+"", Toast.LENGTH_SHORT).show();
+        filterChoice = choice;
+        titles.clear();texts.clear();icons.clear();dates.clear();times.clear();
+        recyclerAdapter.notifyDataSetChanged();
+        readNotificationFromDB(choice);
+        recyclerAdapter.notifyDataSetChanged();
     }
 
     public class NotificationReceiver extends BroadcastReceiver {
@@ -215,6 +227,5 @@ public class MainActivity extends AppCompatActivity {
     private void openFilterAlertDialog(){
         FilterAlertDialog filterAlertDialog = new FilterAlertDialog();
         filterAlertDialog.show(getSupportFragmentManager(), "Filter");
-
     }
 }

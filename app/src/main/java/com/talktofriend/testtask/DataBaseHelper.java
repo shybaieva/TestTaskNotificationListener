@@ -9,6 +9,10 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 public class DataBaseHelper extends SQLiteOpenHelper {
 
     private Context context;
@@ -34,7 +38,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         String query =
                 "CREATE TABLE " + TABLE_NAME + " (" + NOTIFICATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + NOTIFICATION_TITLE +" TEXT, " + NOTIFICATION_TEXT + " TEXT, " + NOTIFICATION_ICON + " TEXT, "
-                + NOTIFICATION_DATE + " TEXT, " + NOTIFICATION_TIME + " TEXT);";
+                + NOTIFICATION_DATE + " DATE, " + NOTIFICATION_TIME + " TIME);";
 
         db.execSQL(query);
     }
@@ -64,8 +68,31 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    Cursor readNotificationsData(){
-        String query = "SELECT * FROM " + TABLE_NAME;
+    Cursor readNotificationsData(int filterChoice){
+
+        String query ;
+        switch (filterChoice){
+            case 2: {
+                int lastHour = LocalTime.now().getHour()-1;
+                Toast.makeText(context, lastHour +"", Toast.LENGTH_SHORT).show();
+                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_TIME + " >= " + lastHour;
+                break;
+            }
+            case 3: {
+               // int lastDay = LocalDate.now() ;
+                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " >= " + LocalDate.now();
+                break;
+            }
+            case 4:{
+                query = "";
+                break;
+            }
+            default:{
+                query = "SELECT * FROM " + TABLE_NAME;
+                break;
+            }
+        }
+
 
         SQLiteDatabase db = getReadableDatabase();
 
