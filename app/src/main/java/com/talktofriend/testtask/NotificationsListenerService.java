@@ -50,14 +50,13 @@ public class NotificationsListenerService extends android.service.notification.N
         return  (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
     }
 
-
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn){
             StatusBarNotification[] activeNotifications = this.getActiveNotifications();
 
             if(activeNotifications != null && activeNotifications.length > 0) {
                 for (int i = 0; i < activeNotifications.length; i++) {
-                        Intent intent = new  Intent("com.github.chagall.notificationlistenerexample");
+                        Intent intent = new  Intent(getApplicationContext().getPackageName());
                         intent.putExtra("app", appName);
                         sendBroadcast(intent);
                         break;

@@ -1,6 +1,7 @@
 package com.talktofriend.testtask;
 
 import android.app.Dialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,7 @@ import androidx.fragment.app.DialogFragment;
 
 public class FilterAlertDialog extends DialogFragment {
 
-    ImageButton allNotifications, perHour, perDay, perMonth;
+    private ImageButton allNotifications, perHour, perDay, perMonth;
 
     @NonNull
     @Override
@@ -27,6 +28,7 @@ public class FilterAlertDialog extends DialogFragment {
         perHour = view.findViewById(R.id.perHourBtn);
         perDay = view.findViewById(R.id.perDayBtn);
         perMonth = view.findViewById(R.id.perMounthBtn);
+
 
         allNotifications.setOnClickListener(new View.OnClickListener() {
             @Override

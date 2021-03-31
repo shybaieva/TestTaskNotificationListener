@@ -126,14 +126,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkPermission(){
         if(!isNotificationServiceEnabled()){
-            //TODO: change IMG
             enableNotificationListenerAlertDialog = buildNotificationServiceAlertDialog();
             enableNotificationListenerAlertDialog.show();
         }
     }
 
     private void readNotificationFromDB(){
-        //TODO: GO info to screen -> RecyclerView
         Cursor cursor = dataBaseHelper.readNotificationsData();
         if(cursor.getCount() == 0){
             Toast.makeText(this, "NO DATA", Toast.LENGTH_SHORT).show();
@@ -217,5 +215,6 @@ public class MainActivity extends AppCompatActivity {
     private void openFilterAlertDialog(){
         FilterAlertDialog filterAlertDialog = new FilterAlertDialog();
         filterAlertDialog.show(getSupportFragmentManager(), "Filter");
+
     }
 }
