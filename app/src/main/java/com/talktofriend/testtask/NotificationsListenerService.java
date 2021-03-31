@@ -7,9 +7,13 @@ import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.Date;
 
 public class NotificationsListenerService extends android.service.notification.NotificationListenerService {
 
@@ -26,10 +30,12 @@ public class NotificationsListenerService extends android.service.notification.N
         appName = sbn.getPackageName();
         text = sbn.getNotification().extras.getString("android.text");
 
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-DD hh:mm:ss");
-        date = (formatter.format(calendar.getTime()));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm::ss");
+        Date dateD = new Date();
 
+        date = formatter.format(dateD);
+
+        Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
         ico = sbn.getNotification().extras.getInt("android.icon");
         Log.i("Meow", ico + "");
 

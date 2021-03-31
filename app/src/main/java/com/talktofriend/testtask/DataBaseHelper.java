@@ -5,14 +5,20 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.icu.util.LocaleData;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
@@ -71,13 +77,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     Cursor readNotificationsData(int filterChoice){
         String query ;
+        SimpleDateFormat formatte = new SimpleDateFormat("yyyy-MM-dd HH:mm::ss");
+        Date dateD = new Date();
+
+        String date = formatte.format(dateD);
+
 
         switch (filterChoice){
             case 2: {
-                String currentDate = LocalDate.now().toString();
+
                 int currentHour = LocalTime.now().getHour();
                 //Toast.makeText(context, lastHour +"", Toast.LENGTH_SHORT).show();
-                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " >= ''" + currentDate + " " + currentHour + ":00:00'";
+                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " > '" +  " " + currentHour + ":00:00'";
                 break;
             }
             case 3: {
@@ -85,13 +96,19 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
                 Toast.makeText(context, today+"", Toast.LENGTH_SHORT).show();
 
-                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " >= '" + today.toString() + " 00:00:00'";
+                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " > '" + today.toString() + " 00:00:00'";
 
                 break;
             }
             case 4:{
-                int lastMonth = LocalDate.now().getMonthValue() -1;
-                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " >= '" + lastMonth;
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                YearMonth yearMonth = YearMonth.now();
+                String firstDay = yearMonth.atDay(1).format(formatter);
+                String lastDay = yearMonth.atEndOfMonth().format(formatter);
+
+                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " >= '" + firstDay+" 00:00:00' AND " + NOTIFICATION_DATE +
+                        " < '" + lastDay + " 00:00:00'";
                 break;
             }
             default:{
@@ -109,4 +126,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         return  cursor;
     }
+
+    public Date addOneMonth()  {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, 1);
+        return cal.getTime();
+    }
+
+
 }

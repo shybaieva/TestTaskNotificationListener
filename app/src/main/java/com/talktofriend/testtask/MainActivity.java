@@ -23,10 +23,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements GetFilterChoice {
 
@@ -132,8 +134,14 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     }
 
     private void refreshRecyclerView(){
-        titles.add(title); texts.add(text); icons.add(icon);  dates.add(date); times.add("time");
+        titles.add(title); texts.add(text); icons.add(icon);
+        //TODO: split data from String
+        String newDate = date.substring(0, date.indexOf(" "));
+        String time = date.substring(newDate.length());
+        dates.add(newDate); times.add(time);
         recyclerAdapter.notifyDataSetChanged();
+        if(noNotificationImg.getVisibility() != View.INVISIBLE)
+            noNotificationImg.setVisibility(View.INVISIBLE);
     }
 
     private void checkPermission(){
@@ -154,8 +162,10 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
                 titles.add(cursor.getString(1));
                 texts.add(cursor.getString(2));
                 icons.add(cursor.getInt(3));
-                dates.add(cursor.getString(4));
-                times.add(cursor.getString(5));
+                String dateFromDb = cursor.getString(4);
+                String newDate = dateFromDb.substring(0, dateFromDb.indexOf(" "));
+                String time = dateFromDb.substring(newDate.length());
+                dates.add(newDate); times.add(time);
             }
         }
     }
@@ -196,6 +206,8 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
         @Override
         public void onReceive(Context context, Intent intent) {
            title = intent.getStringExtra("app");
+           if(title.length()>20)
+               title = title.substring(0, 20);
            text = intent.getStringExtra("text");
             if(text.length()>20)
                 text = text.substring(0, 20);
