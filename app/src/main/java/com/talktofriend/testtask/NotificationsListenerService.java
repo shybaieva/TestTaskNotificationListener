@@ -21,7 +21,7 @@ import static com.talktofriend.testtask.App.CHANNEL_ID;
 public class NotificationsListenerService extends android.service.notification.NotificationListenerService {
 
     private String text, appName, date;
-    private int ico;
+    private String packageName;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -49,7 +49,7 @@ public class NotificationsListenerService extends android.service.notification.N
             stopForeground(true);
             stopSelfResult(startId);
         }
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Override
@@ -65,11 +65,12 @@ public class NotificationsListenerService extends android.service.notification.N
 
             Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
 
-        Intent intent = new  Intent(getApplicationContext().getPackageName());
-            intent.putExtra("app", getAppName(appName));
-            intent.putExtra("text", text);
-            intent.putExtra("date", date);
-            intent.putExtra("ico", ico);
+            Intent intent = new  Intent(getApplicationContext().getPackageName());
+            intent.putExtra(Constants.TITLE, getAppName(appName));
+            intent.putExtra(Constants.TEXT, text);
+            intent.putExtra(Constants.DATE, date);
+            intent.getIntExtra("ico", 0);
+            intent.putExtra(Constants.PACKAGE_NAME, packageName);
 
             sendBroadcast(intent);
     }

@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     private String title;
     private String text;
     private int icon;
+    private String packageName;
     private String date;
     private ArrayList<String> titles, texts, dates, times;
     private ArrayList<Integer> icons;
@@ -67,15 +68,12 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
 
         init();
 
-        recyclerView.setAdapter(recyclerAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        checkPermission();
 
+        startBtn.setImageResource(setButtonImg());
+
+        setRecyclerView();
         readNotificationFromDB(filterChoice);
-
-        isPermissionGiven = sharedPreferences.getBoolean(PERMISSION, false);
 
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,32 +83,16 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
                     Intent serviceIntent = new Intent(getApplicationContext(), NotificationsListenerService.class);
                     serviceIntent.putExtra(Constants.NOTIFICATION_SERVICE_FLAG, Constants.START_SERVICE);
                     ContextCompat.startForegroundService(getApplicationContext(), serviceIntent);
-                    if(isPermissionGiven){
-                        notificationReceiver = new NotificationReceiver();
-                        IntentFilter intentFilter = new IntentFilter();
-                        intentFilter.addAction(getApplicationContext().getPackageName());
-                        registerReceiver(notificationReceiver,intentFilter);
-                        startBtn.setImageResource(R.drawable.stop);
-                        Toast.makeText(MainActivity.this, "Service started", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        checkPermission();
-                    }
+                    connectWithNotificationListenerService();
+                    startBtn.setImageResource(R.drawable.stop);
+                    Toast.makeText(MainActivity.this, "Service started", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     isServiceStarted = false;
-                    Intent stopIntent = new Intent(MainActivity.this, NotificationsListenerService.class);
-                    stopIntent.putExtra(Constants.NOTIFICATION_SERVICE_FLAG,Constants.STOP_SERVICE);
-                    startService(stopIntent);
-
-                    if(isPermissionGiven){
-                        unregisterReceiver(notificationReceiver);
-                        startBtn.setImageResource(R.drawable.start);
-                        Toast.makeText(MainActivity.this, "Service stopped", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        checkPermission();
-                    }
+                    connectWithNotificationListenerService();
+                    unregisterReceiver(notificationReceiver);
+                    startBtn.setImageResource(R.drawable.start);
+                    Toast.makeText(MainActivity.this, "Service stopped", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -141,12 +123,19 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
         sharedPreferences = getSharedPreferences(PERMISSION, MODE_PRIVATE);
     }
 
+    private void setRecyclerView(){
+        recyclerView.setAdapter(recyclerAdapter);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager.setReverseLayout(true);
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
+    }
+
     private void refreshRecyclerView(){
         titles.add(checkStringSize(title));
         texts.add(checkStringSize(text));
         icons.add(icon);
 
-        //TODO: split data from String
         String newDate = date.substring(0, date.indexOf(" "));
         String time = date.substring(newDate.length());
         dates.add(newDate); times.add(time);
@@ -217,9 +206,10 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     public class NotificationReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-           title = intent.getStringExtra("app");
-           text = intent.getStringExtra("text");
-           date = intent.getStringExtra("date");
+           title = intent.getStringExtra(Constants.TITLE);
+           text = intent.getStringExtra(Constants.TEXT);
+           date = intent.getStringExtra(Constants.TEXT);
+           packageName = intent.getStringExtra(Constants.PACKAGE_NAME);
            icon = intent.getIntExtra("ico", -1);
 
            saveNotification();
@@ -260,8 +250,34 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     }
 
     private String checkStringSize(String str){
+        if(str.isEmpty())
+            return "";
         if(str.length()>15)
             return str.substring(0, 16);
         else return str;
+    }
+
+    private int setButtonImg(){
+        sharedPreferences = getSharedPreferences(Constants.SERVICE_STATE, MODE_PRIVATE);
+        if(sharedPreferences.getBoolean(Constants.SERVICE_STATE, false) == false){
+            return R.drawable.start;
+        }
+        else return R.drawable.stop;
+    }
+
+    private void connectWithNotificationListenerService(){
+        if(isServiceStarted){
+            notificationReceiver = new NotificationReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(getApplicationContext().getPackageName());
+            registerReceiver(notificationReceiver,intentFilter);
+
+        }
+        else{
+            isServiceStarted = false;
+            Intent stopIntent = new Intent(MainActivity.this, NotificationsListenerService.class);
+            stopIntent.putExtra(Constants.NOTIFICATION_SERVICE_FLAG,Constants.STOP_SERVICE);
+            startService(stopIntent);
+        }
     }
 }

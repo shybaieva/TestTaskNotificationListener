@@ -87,10 +87,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 String currentHour = dateFormat.format(currentHourDate);
                 String lastHour = dateFormat.format(lastHourDate);
 
-                Log.i("Meow", currentHour);
-                Log.i("Meow", lastHour);
-
-
                 query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " > '" + lastHour+"' AND " + NOTIFICATION_DATE +
                         " <= '" + currentHour + "'";
                 break;
