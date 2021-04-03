@@ -1,6 +1,11 @@
 package com.talktofriend.testtask;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +45,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.title.setText(checkStringSize(titles.get(position).toString()));
         holder.icon.setImageResource((Integer) icons.get(position));
+        //holder.icon.setImageDrawable(getActivityIcon(context, ));
         holder.text.setText(checkStringSize(texts.get(position).toString()));
         holder.date.setText(checkStringSize(dates.get(position).toString()));
         holder.time.setText(checkStringSize(times.get(position).toString()));
@@ -56,7 +62,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-
             icon = itemView.findViewById(R.id.notificationIco);
             title = itemView.findViewById(R.id.notificationTitle);
             text = itemView.findViewById(R.id.notificationText);
@@ -69,5 +74,18 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         if(str.length()>15)
             return str.substring(0, 16);
         else return str;
+    }
+
+    private Drawable getActivityIcon(
+            Context context,
+            String packageName, String activityName) {
+
+        PackageManager packageManager = context.getPackageManager();
+
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName(packageName, activityName));
+        ResolveInfo resolveInfo = packageManager.resolveActivity(intent, 0);
+
+        return resolveInfo.loadIcon(packageManager);
     }
 }

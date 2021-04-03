@@ -1,6 +1,5 @@
 package com.talktofriend.testtask;
 
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -9,12 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-import android.icu.util.LocaleData;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -29,14 +24,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 import static com.talktofriend.testtask.Constants.PERMISSION;
 
@@ -61,12 +49,10 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     private String title;
     private String text;
     private int icon;
-    private Drawable ico;
     private String packageName;
     private String date;
-    private ArrayList<String> titles, texts, dates, times;
+    private ArrayList<String> titles, texts, dates, times, packageNames;
     private ArrayList<Integer> icons;
-    private ArrayList<Drawable> icos;
     private DataBaseHelper dataBaseHelper;
     private RecyclerAdapter recyclerAdapter;
 
@@ -125,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
         icons = new ArrayList<>();
         dates = new ArrayList<>();
         times = new ArrayList<>();
-       // icos = new ArrayList<>();
+        packageNames = new ArrayList<>();
 
         dataBaseHelper = new DataBaseHelper(getApplicationContext());
         recyclerAdapter = new RecyclerAdapter(getApplicationContext(), titles, texts, icons, dates, times);
@@ -213,24 +199,6 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
         recyclerAdapter.notifyDataSetChanged();
     }
 
-    public class NotificationReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-           title = intent.getStringExtra(Constants.TITLE);
-           text = intent.getStringExtra(Constants.TEXT);
-           date = intent.getStringExtra(Constants.DATE);
-           packageName = intent.getStringExtra(Constants.PACKAGE_NAME);
-
-           icon = intent.getIntExtra(Constants.ICO, 0);
-           Log.i("Meow", icon + " ICON IN MAIN");
-            saveNotification();
-           refreshRecyclerView();
-           //ico = getAllICONS(packageName);
-        }
-
-    }
-
-
 
     private AlertDialog buildNotificationServiceAlertDialog(){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -296,43 +264,18 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
         }
     }
 
-//    public Drawable getAllICONS(String packageName) {
-//        Drawable ico = null;
-//        PackageManager pm = getPackageManager();
-//
-//        ActivityManager am1 = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-//
-//        List<ActivityManager.RunningTaskInfo> processes = am1
-//                .getRunningTasks(Integer.MAX_VALUE);
-//
-//        if (processes != null) {
-//            //for (int k = 0; k < 5; k++) {
-//                // String pkgName = app.getPackageName();
-//
-//                Log.e("packageName-->", "" + packageName);
-//
-//                try {
-//                    String pName = (String) pm.getApplicationLabel(pm
-//                            .getApplicationInfo(packageName,
-//                                    PackageManager.GET_META_DATA));
-//                    //name.add("" + pName);
-//                    ApplicationInfo a = pm.getApplicationInfo(packageName,
-//                            PackageManager.GET_META_DATA);
-//
-//                    ico = getPackageManager().getApplicationIcon(
-//                            processes.topActivity.getPackageName());
-//                    getPackageManager();
-//                    Log.e("ico-->", "" + ico);
-//
-//                } catch (PackageManager.NameNotFoundException e) {
-//                    Log.e("ERROR", "Unable to find icon for package '"
-//                            + packageName + "': " + e.getMessage());
-//                }
-//                // icons.put(processes.get(k).topActivity.getPackageName(),ico);
-//               // icos.add(ico);
-//
-//            //}
-//        }
-//        return  ico;
-//    }
+    public class NotificationReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            title = intent.getStringExtra(Constants.TITLE);
+            text = intent.getStringExtra(Constants.TEXT);
+            date = intent.getStringExtra(Constants.DATE);
+            packageName = intent.getStringExtra(Constants.PACKAGE_NAME);
+
+            icon = intent.getIntExtra(Constants.ICO, 0);
+            Log.i("Meow", icon + " ICON IN MAIN");
+            saveNotification();
+            refreshRecyclerView();
+        }
+    }
 }
