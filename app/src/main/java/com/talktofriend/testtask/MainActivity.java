@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     private String text;
     private int icon;
     private String date;
-    private String time;
     private ArrayList<String> titles, texts, dates, times;
     private ArrayList<Integer> icons;
     private DataBaseHelper dataBaseHelper;
@@ -143,7 +142,9 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     }
 
     private void refreshRecyclerView(){
-        titles.add(title); texts.add(text); icons.add(icon);
+        titles.add(checkStringSize(title));
+        texts.add(checkStringSize(text));
+        icons.add(icon);
 
         //TODO: split data from String
         String newDate = date.substring(0, date.indexOf(" "));
@@ -256,5 +257,11 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     private void openFilterAlertDialog(){
         FilterAlertDialog filterAlertDialog = new FilterAlertDialog();
         filterAlertDialog.show(getSupportFragmentManager(), "Filter");
+    }
+
+    private String checkStringSize(String str){
+        if(str.length()>15)
+            return str.substring(0, 16);
+        else return str;
     }
 }

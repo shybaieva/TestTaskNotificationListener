@@ -12,8 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import static android.content.Context.CONTEXT_IGNORE_SECURITY;
-
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
 
     private Context context;
@@ -40,11 +38,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.title.setText(titles.get(position).toString());
+        holder.title.setText(checkStringSize(titles.get(position).toString()));
         holder.icon.setImageResource(R.drawable.ic_launcher_background);
-        holder.text.setText(texts.get(position).toString());
-        holder.date.setText(dates.get(position).toString());
-        holder.time.setText(times.get(position).toString());
+        holder.text.setText(checkStringSize(texts.get(position).toString()));
+        holder.date.setText(checkStringSize(dates.get(position).toString()));
+        holder.time.setText(checkStringSize(times.get(position).toString()));
     }
 
     @Override
@@ -65,5 +63,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             date = itemView.findViewById(R.id.noificationDate);
             time = itemView.findViewById(R.id.noificationTime);
         }
+    }
+
+    private String checkStringSize(String str){
+        if(str.length()>15)
+            return str.substring(0, 16);
+        else return str;
     }
 }

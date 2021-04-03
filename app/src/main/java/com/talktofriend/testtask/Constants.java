@@ -6,4 +6,6 @@ public class Constants {
     public static final String STOP_SERVICE = "stopService";
 
     public static final String PERMISSION = "permission";
+
+    public static final String DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 }

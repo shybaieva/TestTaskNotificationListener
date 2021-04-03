@@ -5,15 +5,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.format.DateFormat;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
@@ -71,27 +73,38 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     Cursor readNotificationsData(int filterChoice){
         String query ;
-        SimpleDateFormat formatte = new SimpleDateFormat("yyyy-MM-dd HH:mm::ss");
-        Date dateD = new Date();
 
-        String date = formatte.format(dateD);
-
+        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATETIME_FORMAT);
 
         switch (filterChoice){
             case 2: {
                 //TODO
-                int currentHour = LocalTime.now().getHour();
-                //Toast.makeText(context, lastHour +"", Toast.LENGTH_SHORT).show();
-                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " > '" +  " " + currentHour + ":00:00'";
+                Calendar calendar = Calendar.getInstance();
+                Date currentHourDate = calendar.getTime();
+                calendar.add(Calendar.HOUR, -1);
+                Date lastHourDate = calendar.getTime();
+
+                String currentHour = dateFormat.format(currentHourDate);
+                String lastHour = dateFormat.format(lastHourDate);
+
+                Log.i("Meow", currentHour);
+                Log.i("Meow", lastHour);
+
+
+                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " > '" + lastHour+"' AND " + NOTIFICATION_DATE +
+                        " <= '" + currentHour + "'";
                 break;
             }
             case 3: {
-                //TODO
-                LocalDate today = LocalDate.now();
+                Calendar calendar = Calendar.getInstance();
+                Date todayDate = calendar.getTime();
+                calendar.add(Calendar.DATE, -1);
+                Date yesterdayDate = calendar.getTime();
+                String today = dateFormat.format(todayDate);
+                String yesterday = dateFormat.format(yesterdayDate);
 
-                Toast.makeText(context, today+"", Toast.LENGTH_SHORT).show();
-
-                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " > '" + today.toString() + " 00:00:00'";
+                query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " > '" + yesterday+" 00:00:00' AND " + NOTIFICATION_DATE +
+                        " <= '" + today + " 00:00:00'";
 
                 break;
             }
@@ -120,4 +133,5 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         return  cursor;
     }
+
 }

@@ -5,26 +5,22 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.widget.Toast;
-
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.Date;
 
 import static com.talktofriend.testtask.App.CHANNEL_ID;
 
 public class NotificationsListenerService extends android.service.notification.NotificationListenerService {
 
-    private String text, appName, date, time;
+    private String text, appName, date;
     private int ico;
 
     @Override
@@ -59,19 +55,17 @@ public class NotificationsListenerService extends android.service.notification.N
     @Override
     public void onNotificationPosted(StatusBarNotification sbn){
             appName = sbn.getPackageName();
-            text = sbn.getNotification().extras.getString("android.text");
+            Bundle extras = sbn.getNotification().extras;
+            text = extras.getString("android.text");
 
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat formatter = new SimpleDateFormat(Constants.DATETIME_FORMAT);
             Date dateD = new Date();
 
             date = formatter.format(dateD);
 
             Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
 
-            ico = sbn.getNotification().extras.getInt(Notification.EXTRA_SMALL_ICON, 0);
-            Log.i("Meow", ico + "");
-
-            Intent intent = new  Intent(getApplicationContext().getPackageName());
+        Intent intent = new  Intent(getApplicationContext().getPackageName());
             intent.putExtra("app", getAppName(appName));
             intent.putExtra("text", text);
             intent.putExtra("date", date);
@@ -87,4 +81,5 @@ public class NotificationsListenerService extends android.service.notification.N
         catch (final PackageManager.NameNotFoundException e) { ai = null; }
         return  (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
     }
+
 }
