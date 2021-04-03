@@ -39,7 +39,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.title.setText(checkStringSize(titles.get(position).toString()));
-        holder.icon.setImageResource(R.drawable.ic_launcher_background);
+        holder.icon.setImageResource((Integer) icons.get(position));
         holder.text.setText(checkStringSize(texts.get(position).toString()));
         holder.date.setText(checkStringSize(dates.get(position).toString()));
         holder.time.setText(checkStringSize(times.get(position).toString()));

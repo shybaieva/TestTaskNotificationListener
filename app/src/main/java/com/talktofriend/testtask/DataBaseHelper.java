@@ -53,7 +53,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    void addNewNotification(String title, String text, int ico, String date, String time){
+    void addNewNotification(String title, String text, int ico, String date){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 

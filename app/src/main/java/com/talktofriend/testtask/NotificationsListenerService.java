@@ -2,9 +2,12 @@ package com.talktofriend.testtask;
 
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -21,7 +24,6 @@ import static com.talktofriend.testtask.App.CHANNEL_ID;
 public class NotificationsListenerService extends android.service.notification.NotificationListenerService {
 
     private String text, appName, date;
-    private String packageName;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -55,24 +57,36 @@ public class NotificationsListenerService extends android.service.notification.N
     @Override
     public void onNotificationPosted(StatusBarNotification sbn){
             appName = sbn.getPackageName();
-            Bundle extras = sbn.getNotification().extras;
-            text = extras.getString("android.text");
+            if(appName != getApplicationContext().getPackageName()){
+                Log.i("Meow", appName);
+                Bundle extras = sbn.getNotification().extras;
+                text = extras.getString("android.text");
 
-            SimpleDateFormat formatter = new SimpleDateFormat(Constants.DATETIME_FORMAT);
-            Date dateD = new Date();
+                SimpleDateFormat formatter = new SimpleDateFormat(Constants.DATETIME_FORMAT);
+                Date dateD = new Date();
 
-            date = formatter.format(dateD);
+                date = formatter.format(dateD);
 
-            Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
+                ApplicationInfo applicationInfo = null;
+                try {
+                    applicationInfo = getApplicationContext().getPackageManager().getApplicationInfo(appName, PackageManager.GET_META_DATA);
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+                int icon= applicationInfo.icon;
+                Log.i("Meow", icon+"");
+                Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
 
-            Intent intent = new  Intent(getApplicationContext().getPackageName());
-            intent.putExtra(Constants.TITLE, getAppName(appName));
-            intent.putExtra(Constants.TEXT, text);
-            intent.putExtra(Constants.DATE, date);
-            intent.getIntExtra("ico", 0);
-            intent.putExtra(Constants.PACKAGE_NAME, packageName);
+                Intent intent = new  Intent(getApplicationContext().getPackageName());
+                intent.putExtra(Constants.PACKAGE_NAME, appName);
+                intent.putExtra(Constants.TITLE, getAppName(appName));
+                intent.putExtra(Constants.TEXT, text);
+                intent.putExtra(Constants.DATE, date);
+                intent.putExtra(Constants.ICO, icon);
 
-            sendBroadcast(intent);
+                sendBroadcast(intent);
+            }
+
     }
 
     private String getAppName(String packageName){
@@ -81,6 +95,20 @@ public class NotificationsListenerService extends android.service.notification.N
         try { ai = pm.getApplicationInfo(packageName, 0); }
         catch (final PackageManager.NameNotFoundException e) { ai = null; }
         return  (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
+    }
+
+
+    private Drawable getActivityIcon(
+            Context context,
+            String packageName, String activityName) {
+
+        PackageManager packageManager = context.getPackageManager();
+
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName(packageName, activityName));
+        ResolveInfo resolveInfo = packageManager.resolveActivity(intent, 0);
+
+        return resolveInfo.loadIcon(packageManager);
     }
 
 }
