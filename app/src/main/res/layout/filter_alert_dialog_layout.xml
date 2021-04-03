@@ -25,9 +25,9 @@
         android:id="@+id/perHourBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#00FFFFFF"
         android:layout_margin="10dp"
-        app:srcCompat="@drawable/radio_button_checked" />
+        android:background="#00FFFFFF"
+        app:srcCompat="@drawable/radio_button_unchecked" />
 
     <TextView
         android:id="@+id/textView3"
@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:background="#00FFFFFF"
-        app:srcCompat="@drawable/radio_button_checked" />
+        app:srcCompat="@drawable/radio_button_unchecked" />
 
     <TextView
         android:id="@+id/textView4"
@@ -59,7 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:background="#00FFFFFF"
-        app:srcCompat="@drawable/radio_button_checked" />
+        app:srcCompat="@drawable/radio_button_unchecked" />
 
     <TextView
         android:id="@+id/textView5"

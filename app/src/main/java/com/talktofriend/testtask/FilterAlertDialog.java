@@ -78,5 +78,4 @@ public class FilterAlertDialog extends DialogFragment {
         } catch (ClassCastException ignored) { }
         dismiss();
     }
-
 }

@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +30,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import static com.talktofriend.testtask.Constants.PERMISSION;
 
 public class MainActivity extends AppCompatActivity implements GetFilterChoice {
 
@@ -43,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     private ImageButton startBtn, filterBtn;
 
     private SharedPreferences sharedPreferences;
-    private static final String PERMISSION = "permission";
 
     private int filterChoice = 1;
 
@@ -81,6 +83,9 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
             public void onClick(View v) {
                 if(!isServiceStarted){
                     isServiceStarted = true;
+                    Intent serviceIntent = new Intent(getApplicationContext(), NotificationsListenerService.class);
+                    serviceIntent.putExtra(Constants.NOTIFICATION_SERVICE_FLAG, Constants.START_SERVICE);
+                    ContextCompat.startForegroundService(getApplicationContext(), serviceIntent);
                     if(isPermissionGiven){
                         notificationReceiver = new NotificationReceiver();
                         IntentFilter intentFilter = new IntentFilter();
@@ -95,6 +100,10 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
                 }
                 else {
                     isServiceStarted = false;
+                    Intent stopIntent = new Intent(MainActivity.this, NotificationsListenerService.class);
+                    stopIntent.putExtra(Constants.NOTIFICATION_SERVICE_FLAG,Constants.STOP_SERVICE);
+                    startService(stopIntent);
+
                     if(isPermissionGiven){
                         unregisterReceiver(notificationReceiver);
                         startBtn.setImageResource(R.drawable.start);
@@ -135,10 +144,12 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
 
     private void refreshRecyclerView(){
         titles.add(title); texts.add(text); icons.add(icon);
+
         //TODO: split data from String
         String newDate = date.substring(0, date.indexOf(" "));
         String time = date.substring(newDate.length());
         dates.add(newDate); times.add(time);
+
         recyclerAdapter.notifyDataSetChanged();
         if(noNotificationImg.getVisibility() != View.INVISIBLE)
             noNotificationImg.setVisibility(View.INVISIBLE);
@@ -206,15 +217,10 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
         @Override
         public void onReceive(Context context, Intent intent) {
            title = intent.getStringExtra("app");
-           if(title.length()>20)
-               title = title.substring(0, 20);
            text = intent.getStringExtra("text");
-            if(text.length()>20)
-                text = text.substring(0, 20);
-
            date = intent.getStringExtra("date");
-
            icon = intent.getIntExtra("ico", -1);
+
            saveNotification();
            refreshRecyclerView();
         }

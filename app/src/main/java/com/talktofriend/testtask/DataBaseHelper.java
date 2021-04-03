@@ -5,19 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.icu.util.LocaleData;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import java.sql.Time;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Date;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
@@ -33,7 +29,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String NOTIFICATION_TEXT = "text";
     private static final String NOTIFICATION_ICON = "icon";
     private static final String NOTIFICATION_DATE ="date";
-    private static final String NOTIFICATION_TIME ="time";
 
     public DataBaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,7 +40,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         String query =
                 "CREATE TABLE " + TABLE_NAME + " (" + NOTIFICATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + NOTIFICATION_TITLE +" TEXT, " + NOTIFICATION_TEXT + " TEXT, " + NOTIFICATION_ICON + " INTEGER, "
-                + NOTIFICATION_DATE + " DATETIME, " + NOTIFICATION_TIME + " TIME);";
+                + NOTIFICATION_DATE + " DATETIME);";
 
         db.execSQL(query);
     }
@@ -64,7 +59,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         contentValues.put(NOTIFICATION_TEXT, text);
         contentValues.put(NOTIFICATION_ICON, ico);
         contentValues.put(NOTIFICATION_DATE, date);
-        contentValues.put(NOTIFICATION_TIME, time);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
         if(result == -1){
@@ -85,13 +79,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         switch (filterChoice){
             case 2: {
-
+                //TODO
                 int currentHour = LocalTime.now().getHour();
                 //Toast.makeText(context, lastHour +"", Toast.LENGTH_SHORT).show();
                 query = "SELECT * FROM " + TABLE_NAME + " WHERE " + NOTIFICATION_DATE + " > '" +  " " + currentHour + ":00:00'";
                 break;
             }
             case 3: {
+                //TODO
                 LocalDate today = LocalDate.now();
 
                 Toast.makeText(context, today+"", Toast.LENGTH_SHORT).show();
@@ -101,7 +96,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 break;
             }
             case 4:{
-
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 YearMonth yearMonth = YearMonth.now();
                 String firstDay = yearMonth.atDay(1).format(formatter);
@@ -126,12 +120,4 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         return  cursor;
     }
-
-    public Date addOneMonth()  {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, 1);
-        return cal.getTime();
-    }
-
-
 }

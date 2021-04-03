@@ -1,19 +1,26 @@
 package com.talktofriend.testtask;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.IBinder;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
+
+import static com.talktofriend.testtask.App.CHANNEL_ID;
 
 public class NotificationsListenerService extends android.service.notification.NotificationListenerService {
 
@@ -26,27 +33,51 @@ public class NotificationsListenerService extends android.service.notification.N
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if(intent.getExtras().getString(Constants.NOTIFICATION_SERVICE_FLAG).equals(Constants.START_SERVICE)  ){
+
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                    0, notificationIntent, 0);
+
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle("Notification Listener")
+                    .setContentText("Start Service")
+                    .setSmallIcon(R.drawable.ic_baseline_notification_important_24)
+                    .setContentIntent(pendingIntent)
+                    .build();
+
+            startForeground(1, notification);
+        }
+        else {
+            stopForeground(true);
+            stopSelfResult(startId);
+        }
+        return START_NOT_STICKY;
+    }
+
+    @Override
     public void onNotificationPosted(StatusBarNotification sbn){
-        appName = sbn.getPackageName();
-        text = sbn.getNotification().extras.getString("android.text");
+            appName = sbn.getPackageName();
+            text = sbn.getNotification().extras.getString("android.text");
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm::ss");
-        Date dateD = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date dateD = new Date();
 
-        date = formatter.format(dateD);
+            date = formatter.format(dateD);
 
-        Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
-        ico = sbn.getNotification().extras.getInt("android.icon");
-        Log.i("Meow", ico + "");
+            Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
 
-        Intent intent = new  Intent(getApplicationContext().getPackageName());
-        intent.putExtra("app", getAppName(appName));
-        intent.putExtra("text", text);
-        //intent.putExtra("time", time);
-        intent.putExtra("date", date);
-        intent.putExtra("ico", ico);
+            ico = sbn.getNotification().extras.getInt(Notification.EXTRA_SMALL_ICON, 0);
+            Log.i("Meow", ico + "");
 
-        sendBroadcast(intent);
+            Intent intent = new  Intent(getApplicationContext().getPackageName());
+            intent.putExtra("app", getAppName(appName));
+            intent.putExtra("text", text);
+            intent.putExtra("date", date);
+            intent.putExtra("ico", ico);
+
+            sendBroadcast(intent);
     }
 
     private String getAppName(String packageName){
@@ -56,19 +87,4 @@ public class NotificationsListenerService extends android.service.notification.N
         catch (final PackageManager.NameNotFoundException e) { ai = null; }
         return  (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
     }
-
-//    @Override
-//    public void onNotificationRemoved(StatusBarNotification sbn){
-//            StatusBarNotification[] activeNotifications = this.getActiveNotifications();
-//
-//            if(activeNotifications != null && activeNotifications.length > 0) {
-//                for (int i = 0; i < activeNotifications.length; i++) {
-//                        Intent intent = new  Intent(getApplicationContext().getPackageName());
-//                        intent.putExtra("app", appName);
-//                        sendBroadcast(intent);
-//                        break;
-//                }
-//            }
-//    }
-
 }
