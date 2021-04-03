@@ -77,7 +77,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATETIME_FORMAT);
 
         switch (filterChoice){
-            case 2: {
+            case 1: {
                 //TODO
                 Calendar calendar = Calendar.getInstance();
                 Date currentHourDate = calendar.getTime();
@@ -95,7 +95,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         " <= '" + currentHour + "'";
                 break;
             }
-            case 3: {
+            case 2: {
                 Calendar calendar = Calendar.getInstance();
                 Date todayDate = calendar.getTime();
                 calendar.add(Calendar.DATE, -1);
@@ -108,7 +108,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
                 break;
             }
-            case 4:{
+            case 3:{
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 YearMonth yearMonth = YearMonth.now();
                 String firstDay = yearMonth.atDay(1).format(formatter);
