@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     private int icon;
     private String packageName;
     private String date;
+    private Drawable ico;
     private ArrayList<String> titles, texts, dates, times, packageNames;
     private ArrayList<Integer> icons;
     private DataBaseHelper dataBaseHelper;
@@ -260,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
             isServiceStarted = false;
             Intent stopIntent = new Intent(MainActivity.this, NotificationsListenerService.class);
             stopIntent.putExtra(Constants.NOTIFICATION_SERVICE_FLAG,Constants.STOP_SERVICE);
-            startService(stopIntent);
+            startForegroundService(stopIntent);
         }
     }
 
@@ -273,9 +276,11 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
             packageName = intent.getStringExtra(Constants.PACKAGE_NAME);
 
             icon = intent.getIntExtra(Constants.ICO, 0);
+
             Log.i("Meow", icon + " ICON IN MAIN");
             saveNotification();
             refreshRecyclerView();
         }
     }
+
 }
