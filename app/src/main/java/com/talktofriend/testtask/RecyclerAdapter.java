@@ -3,6 +3,7 @@ package com.talktofriend.testtask;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
@@ -16,21 +17,24 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
 
     private Context context;
-    private ArrayList titles, texts, icons, dates, times;
+    private ArrayList titles, texts, icons, dates, times, packageNames;
 
+//, ArrayList packageNames
     public RecyclerAdapter(
             Context context,
-            ArrayList titles, ArrayList texts, ArrayList icons, ArrayList dates, ArrayList times) {
+            ArrayList titles, ArrayList texts, ArrayList icons, ArrayList dates, ArrayList times, ArrayList packageNames) {
         this.context = context;
         this.titles = titles;
         this.texts = texts;
         this.icons = icons;
         this.dates = dates;
         this.times = times;
+        this.packageNames = packageNames;
     }
 
     @NonNull
@@ -43,9 +47,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+
         holder.title.setText(checkStringSize(titles.get(position).toString()));
-        holder.icon.setImageResource((Integer) icons.get(position));
-        //holder.icon.setImageDrawable(getActivityIcon(context, ));
+        ///holder.icon.setImageResource((Integer) icons.get(position));
+        holder.icon.setImageDrawable(getAllIcons(packageNames.get(position).toString()));
         holder.text.setText(checkStringSize(texts.get(position).toString()));
         holder.date.setText(checkStringSize(dates.get(position).toString()));
         holder.time.setText(checkStringSize(times.get(position).toString()));
@@ -60,6 +65,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         ImageView icon;
         TextView title, text, date, time;
 
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             icon = itemView.findViewById(R.id.notificationIco);
@@ -68,6 +74,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             date = itemView.findViewById(R.id.noificationDate);
             time = itemView.findViewById(R.id.noificationTime);
         }
+
+
     }
 
     private String checkStringSize(String str){
@@ -76,16 +84,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         else return str;
     }
 
-    private Drawable getActivityIcon(
-            Context context,
-            String packageName, String activityName) {
-
-        PackageManager packageManager = context.getPackageManager();
-
-        Intent intent = new Intent();
-        intent.setComponent(new ComponentName(packageName, activityName));
-        ResolveInfo resolveInfo = packageManager.resolveActivity(intent, 0);
-
-        return resolveInfo.loadIcon(packageManager);
+    private Drawable getAllIcons(String packageName){
+        Drawable appicon = null;
+        try {
+          appicon = context.getPackageManager().getApplicationIcon(packageName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return appicon;
     }
 }

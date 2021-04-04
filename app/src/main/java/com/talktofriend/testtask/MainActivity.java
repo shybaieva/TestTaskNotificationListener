@@ -8,9 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.talktofriend.testtask.Constants.PERMISSION;
 
@@ -51,9 +52,8 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     private String title;
     private String text;
     private int icon;
-    private String packageName;
+    private String packageAppName;
     private String date;
-    private Drawable ico;
     private ArrayList<String> titles, texts, dates, times, packageNames;
     private ArrayList<Integer> icons;
     private DataBaseHelper dataBaseHelper;
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
         packageNames = new ArrayList<>();
 
         dataBaseHelper = new DataBaseHelper(getApplicationContext());
-        recyclerAdapter = new RecyclerAdapter(getApplicationContext(), titles, texts, icons, dates, times);
+        recyclerAdapter = new RecyclerAdapter(getApplicationContext(), titles, texts, icons, dates, times, packageNames);
 
         sharedPreferences = getSharedPreferences(PERMISSION, MODE_PRIVATE);
     }
@@ -131,10 +131,10 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     }
 
     private void refreshRecyclerView(){
-        titles.add(checkStringSize(title));
-        texts.add(checkStringSize(text));
+        titles.add(title);
+        texts.add(text);
         icons.add(icon);
-
+        packageNames.add(packageAppName);
         String newDate = date.substring(0, date.indexOf(" "));
         String time = date.substring(newDate.length());
         dates.add(newDate); times.add(time);
@@ -161,17 +161,19 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
             while (cursor.moveToNext()){
                 titles.add(cursor.getString(1));
                 texts.add(cursor.getString(2));
-                icons.add(cursor.getInt(3));
+                packageNames.add(cursor.getString(3));
+
                 String dateFromDb = cursor.getString(4);
                 String newDate = dateFromDb.substring(0, dateFromDb.indexOf(" "));
                 String time = dateFromDb.substring(newDate.length());
+
                 dates.add(newDate); times.add(time);
             }
         }
     }
 
     private void saveNotification(){
-        dataBaseHelper.addNewNotification(title, text, icon, date);
+        dataBaseHelper.addNewNotification(title, text, packageAppName, date);
     }
 
     private boolean isNotificationServiceEnabled(){
@@ -235,14 +237,6 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
         filterAlertDialog.show(getSupportFragmentManager(), "Filter");
     }
 
-    private String checkStringSize(String str){
-        if(str.isEmpty())
-            return "";
-        if(str.length()>15)
-            return str.substring(0, 16);
-        else return str;
-    }
-
     private int setButtonImg(){
         sharedPreferences = getSharedPreferences(Constants.SERVICE_STATE, MODE_PRIVATE);
         if(sharedPreferences.getBoolean(Constants.SERVICE_STATE, false) == false){
@@ -257,8 +251,8 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(getApplicationContext().getPackageName());
             registerReceiver(notificationReceiver,intentFilter);
-
         }
+
         else{
             isServiceStarted = false;
             Intent stopIntent = new Intent(MainActivity.this, NotificationsListenerService.class);
@@ -273,14 +267,10 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
             title = intent.getStringExtra(Constants.TITLE);
             text = intent.getStringExtra(Constants.TEXT);
             date = intent.getStringExtra(Constants.DATE);
-            packageName = intent.getStringExtra(Constants.PACKAGE_NAME);
-
+            packageAppName = intent.getStringExtra(Constants.PACKAGE_NAME);
             icon = intent.getIntExtra(Constants.ICO, 0);
-
-            Log.i("Meow", icon + " ICON IN MAIN");
             saveNotification();
             refreshRecyclerView();
         }
     }
-
 }

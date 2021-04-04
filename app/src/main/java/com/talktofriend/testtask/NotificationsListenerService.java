@@ -51,7 +51,7 @@ public class NotificationsListenerService extends android.service.notification.N
             stopForeground(true);
             stopSelfResult(startId);
         }
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override

@@ -41,7 +41,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String query =
                 "CREATE TABLE " + TABLE_NAME + " (" + NOTIFICATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + NOTIFICATION_TITLE +" TEXT, " + NOTIFICATION_TEXT + " TEXT, " + NOTIFICATION_ICON + " INTEGER, "
+                + NOTIFICATION_TITLE +" TEXT, " + NOTIFICATION_TEXT + " TEXT, " + NOTIFICATION_ICON + " TEXT, "
                 + NOTIFICATION_DATE + " DATETIME);";
 
         db.execSQL(query);
@@ -53,7 +53,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    void addNewNotification(String title, String text, int ico, String date){
+    void addNewNotification(String title, String text, String ico, String date){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -78,7 +78,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         switch (filterChoice){
             case 1: {
-                //TODO
                 Calendar calendar = Calendar.getInstance();
                 Date currentHourDate = calendar.getTime();
                 calendar.add(Calendar.HOUR, -1);
@@ -120,7 +119,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             }
         }
 
-
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor cursor = null;
@@ -129,5 +127,4 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         return  cursor;
     }
-
 }
