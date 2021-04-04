@@ -58,7 +58,7 @@ public class NotificationsListenerService extends android.service.notification.N
     public void onNotificationPosted(StatusBarNotification sbn){
             appName = sbn.getPackageName();
             if(appName != getApplicationContext().getPackageName()){
-                Log.i("Meow", appName);
+
                 Bundle extras = sbn.getNotification().extras;
                 text = extras.getString("android.text");
 
@@ -74,8 +74,6 @@ public class NotificationsListenerService extends android.service.notification.N
                     e.printStackTrace();
                 }
                 int icon= applicationInfo.icon;
-                Log.i("Meow", icon+"");
-                Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
 
                 Intent intent = new  Intent(getApplicationContext().getPackageName());
                 intent.putExtra(Constants.PACKAGE_NAME, appName);
@@ -86,7 +84,6 @@ public class NotificationsListenerService extends android.service.notification.N
 
                 sendBroadcast(intent);
             }
-
     }
 
     private String getAppName(String packageName){
@@ -96,19 +93,4 @@ public class NotificationsListenerService extends android.service.notification.N
         catch (final PackageManager.NameNotFoundException e) { ai = null; }
         return  (String) (ai != null ? pm.getApplicationLabel(ai) : "(unknown)");
     }
-
-
-    private Drawable getActivityIcon(
-            Context context,
-            String packageName, String activityName) {
-
-        PackageManager packageManager = context.getPackageManager();
-
-        Intent intent = new Intent();
-        intent.setComponent(new ComponentName(packageName, activityName));
-        ResolveInfo resolveInfo = packageManager.resolveActivity(intent, 0);
-
-        return resolveInfo.loadIcon(packageManager);
-    }
-
 }

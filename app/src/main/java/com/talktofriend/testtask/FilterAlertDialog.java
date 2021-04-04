@@ -50,32 +50,33 @@ public class FilterAlertDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(), "ALL", Toast.LENGTH_SHORT).show();
-                sendChoiceToActivity(0);
                 setNewImage(0);
+                sendChoiceToActivity(0);
+
             }
         });
 
         perHour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendChoiceToActivity(1);
                 setNewImage(1);
+                sendChoiceToActivity(1);
             }
         });
 
         perDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendChoiceToActivity(2);
                 setNewImage(2);
+                sendChoiceToActivity(2);
             }
         });
 
         perMonth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendChoiceToActivity(3);
                 setNewImage(3);
+                sendChoiceToActivity(3);
             }
         });
 

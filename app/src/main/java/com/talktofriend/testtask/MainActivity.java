@@ -81,7 +81,9 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
                     Intent serviceIntent = new Intent(getApplicationContext(), NotificationsListenerService.class);
                     serviceIntent.putExtra(Constants.NOTIFICATION_SERVICE_FLAG, Constants.START_SERVICE);
                     ContextCompat.startForegroundService(getApplicationContext(), serviceIntent);
+
                     connectWithNotificationListenerService();
+
                     startBtn.setImageResource(R.drawable.stop);
                     Toast.makeText(MainActivity.this, "Service started", Toast.LENGTH_SHORT).show();
                 }
@@ -196,14 +198,12 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
 
     @Override
     public void onSendFilterChoice(int choice) {
-        Toast.makeText(this, choice+"", Toast.LENGTH_SHORT).show();
         filterChoice = choice;
         titles.clear();texts.clear();icons.clear();dates.clear();times.clear();
         recyclerAdapter.notifyDataSetChanged();
         readNotificationFromDB(choice);
         recyclerAdapter.notifyDataSetChanged();
     }
-
 
     private AlertDialog buildNotificationServiceAlertDialog(){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
