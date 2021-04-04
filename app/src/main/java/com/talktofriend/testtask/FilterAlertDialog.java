@@ -33,6 +33,9 @@ public class FilterAlertDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+
+        lastChoice = getArguments().getInt(Constants.FILTER);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View view = inflater.inflate(R.layout.filter_alert_dialog_layout, null);
@@ -45,6 +48,9 @@ public class FilterAlertDialog extends DialogFragment {
         perMonth = view.findViewById(R.id.perMounthBtn);
 
         buttons.add(allNotifications); buttons.add(perHour); buttons.add(perDay); buttons.add(perMonth);
+
+
+        setNewImage(lastChoice);
 
         allNotifications.setOnClickListener(new View.OnClickListener() {
             @Override

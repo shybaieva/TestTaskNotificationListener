@@ -15,4 +15,6 @@ public class Constants {
     public static final String TEXT = "text";
     public static final String DATE = "date";
     public static final String ICO = "ico";
+
+    public static final String FILTER = "filter";
 }

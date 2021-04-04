@@ -254,6 +254,9 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
 
     private void openFilterAlertDialog(){
         FilterAlertDialog filterAlertDialog = new FilterAlertDialog();
+        Bundle args = new Bundle();
+        args.putInt(Constants.FILTER, filterChoice);
+        filterAlertDialog.setArguments(args);
         filterAlertDialog.show(getSupportFragmentManager(), "Filter");
     }
 
