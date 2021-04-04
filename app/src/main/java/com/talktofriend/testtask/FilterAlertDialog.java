@@ -49,10 +49,8 @@ public class FilterAlertDialog extends DialogFragment {
         allNotifications.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "ALL", Toast.LENGTH_SHORT).show();
                 setNewImage(0);
                 sendChoiceToActivity(0);
-
             }
         });
 

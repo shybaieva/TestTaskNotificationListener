@@ -199,7 +199,27 @@ public class MainActivity extends AppCompatActivity implements GetFilterChoice {
     @Override
     public void onSendFilterChoice(int choice) {
         filterChoice = choice;
+        switch (filterChoice){
+            case 1: {
+                Toast.makeText(this, "Per hour", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case 2:{
+                Toast.makeText(this, "Per day", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case 3:{
+                Toast.makeText(this, "Per month", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            default:{
+                Toast.makeText(this, "All", Toast.LENGTH_SHORT).show();
+                break;
+            }
+        }
+
         titles.clear();texts.clear();icons.clear();dates.clear();times.clear();
+
         recyclerAdapter.notifyDataSetChanged();
         readNotificationFromDB(choice);
         recyclerAdapter.notifyDataSetChanged();
